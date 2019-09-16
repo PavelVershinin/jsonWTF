@@ -5,28 +5,28 @@ import (
 	"testing"
 )
 
-func TestJsonWTF_UnmarshalJSON(t *testing.T) {
-	var testStruct struct {
-		BoolAsString  JsonWTF `json:"bool_as_string"`
-		FloatAsString JsonWTF `json:"float_as_string"`
-		IntAsString   JsonWTF `json:"int_as_string"`
-		BoolValid     JsonWTF `json:"bool_valid"`
-		IntValid      JsonWTF `json:"int_valid"`
-		FloatValid    JsonWTF `json:"float_valid"`
-		StringValid   JsonWTF `json:"string_valid"`
+var testStruct struct {
+	BoolAsString  JsonWTF `json:"bool_as_string"`
+	FloatAsString JsonWTF `json:"float_as_string"`
+	IntAsString   JsonWTF `json:"int_as_string"`
+	BoolValid     JsonWTF `json:"bool_valid"`
+	IntValid      JsonWTF `json:"int_valid"`
+	FloatValid    JsonWTF `json:"float_valid"`
+	StringValid   JsonWTF `json:"string_valid"`
+}
+var testJson = []byte(`
+	{
+		"bool_as_string":"true",
+		"float_as_string": "3,1415926535897932384626433832795",
+		"int_as_string": "68465",
+		"bool_valid": true,
+		"int_valid": 68465,
+		"float_valid": 3.1415926535897932384626433832795,
+		"string_valid": "Мама мыла раму"
 	}
-	var testJson = []byte(`
-		{
-			"bool_as_string":"true",
-			"float_as_string": "3,1415926535897932384626433832795",
-			"int_as_string": "68465",
-			"bool_valid": true,
-			"int_valid": 68465,
-			"float_valid": 3.1415926535897932384626433832795,
-			"string_valid": "Мама мыла раму"
-		}
-	`)
+`)
 
+func TestJsonWTF_UnmarshalJSON(t *testing.T) {
 	if err := json.Unmarshal(testJson, &testStruct); err != nil {
 		t.Fatal(err)
 	}
@@ -57,5 +57,20 @@ func TestJsonWTF_UnmarshalJSON(t *testing.T) {
 
 	if testStruct.StringValid.String() != "Мама мыла раму" {
 		t.Errorf("Wrong value of StringValid. Expected: \"Мама мыла раму\", real: %s", testStruct.StringValid)
+	}
+
+	if testStruct.IntAsString.Float() != 68465 {
+		t.Errorf("Wrong value of IntAsString. Expected: 68465, real: %s", testStruct.IntAsString)
+	}
+}
+
+func TestJsonWTF_MarshalJSON(t *testing.T) {
+	if err := json.Unmarshal(testJson, &testStruct); err != nil {
+		t.Fatal(err)
+	}
+	if b, err := json.Marshal(testStruct); err != nil {
+		t.Fatal(err)
+	} else if string(b) != `{"bool_as_string":true,"float_as_string":3.1415926535897932384626433832795,"int_as_string":68465,"bool_valid":true,"int_valid":68465,"float_valid":3.1415926535897932384626433832795,"string_valid":"Мама мыла раму"}` {
+		t.Error("Wrong json")
 	}
 }

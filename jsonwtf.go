@@ -17,12 +17,12 @@ var (
 // MarshalJSON Правила для упаковки в Json
 func (j JsonWTF) MarshalJSON() ([]byte, error) {
 	if regIsNumber.MatchString(j.stringValue) {
-		return []byte(j.stringValue), nil
+		return []byte(strings.Replace(j.stringValue, ",", ".", 1)), nil
 	}
 	if j.stringValue == "true" || j.stringValue == "false" {
 		return []byte(j.stringValue), nil
 	}
-	return []byte(`"` + strings.Replace(j.stringValue, `"`, `\"`, -1)), nil
+	return []byte(`"` + strings.Replace(j.stringValue, `"`, `\"`, -1) + `"`), nil
 }
 
 // UnmarshalJSON Правила для распаковки из Json
