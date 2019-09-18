@@ -34,7 +34,8 @@ func (j *JsonWTF) UnmarshalJSON(b []byte) error {
 
 // String Вернёт строку как есть
 func (j JsonWTF) String() string {
-	return j.stringValue
+	b, _ := strconv.Unquote(`"`+j.stringValue+`"`)
+	return string(b)
 }
 
 // Float Попытается привести значение к float64
